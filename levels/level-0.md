@@ -20,7 +20,7 @@ The goals of level 0 are to:
 
 1. Follow [the instructions to deploy your site to Netlify](https://curriculum.codeyourfuture.io/guides/deployment-netlify/).
 2. Configure your site for auto-deployments.
-3. Ensure your Netlify site is named exactly `cyf-USERNAME-tv.netlify.app` where `USERNAME` is your GitHub username.
+3. Ensure your Netlify site is named exactly `cyf-fhkahin-tv.netlify.app` where `USERNAME` is your GitHub username.
 
 ## Get set up on your laptop
 
