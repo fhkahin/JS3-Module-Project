@@ -1,3 +1,43 @@
 #root {
-  color: red;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.episode {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: calc(33.33% - 20px); /* so that three cards can fit in a row */
+  box-sizing: border-box;
+  text-align: center; 
+}
+
+.episode img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* to ensure the image is displayed as a block element for centering */
+  margin: 0 auto; /* to center the image horizontally */
+}
+
+.episode h2 {
+  margin-top: 0;
+  border: 1px solid #ccc; border-radius: 15px;
+  padding: 20px; 
+}
+
+.episode .content {
+  text-align: center; 
+}
+
+footer {
+  display: block;
+  align-items: center;
+}
+
+/* Media query for smaller devices */
+@media (max-width: 600px) {
+  .episode {
+    width: calc(50% - 20px); /* Adjust width to fit two cards in a row */
+  }
 }
