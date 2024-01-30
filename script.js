@@ -1,12 +1,37 @@
+const allEpisodes = getAllEpisodes();
+const searchInput = document.getElementById("search-input");
+
+
 function setup() {
-  const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
 }
 
-function makePageForEpisodes(episodeList) {
+// Search bar implementation
+
+let searchTerm = searchInput.addEventListener("input", (event) => {
+  const searchTerm = event.target.value;
+  makePageForEpisodes(allEpisodes, searchTerm);
+})
+
+
+function makePageForEpisodes(episodeList, searchTerm) {
   const rootElem = document.getElementById("root");
 
-  episodeList.forEach(episode => {
+  removeAllChildNodes(rootElem)
+
+  let filteredEpisodeList = [...filterEpisodeList(episodeList, searchTerm)];
+
+  function filterEpisodeList(episodeList, searchTerm) {
+    if (!searchTerm) {
+      return episodeList
+    }
+    return episodeList.filter((episode) => {
+      const searchSource = episode.name + episode.summary;
+      return searchSource.toLowerCase().includes(searchTerm.toLowerCase())
+    })
+  }
+
+  filteredEpisodeList.forEach(episode => {
     const episodeCard = makeEpisodeCard(episode);
     rootElem.appendChild(episodeCard);
   });
@@ -45,10 +70,11 @@ function makeEpisodeCard(episode) {
   return episodeContainer;
 }
 
-const searchInput = document.getElementById("search-input");
-searchInput.addEventListener("input", (event) => {
-  const searchTerm = event.target.value;
-  console.log(searchTerm);
-})
+// Clean the root before filter
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
 
 window.onload = setup;
