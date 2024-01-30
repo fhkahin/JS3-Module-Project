@@ -48,8 +48,7 @@ function makeEpisodeCard(episode) {
 const searchInput = document.getElementById("search-input");
 searchInput.addEventListener("input", (event) => {
   const searchTerm = event.target.value;
-  const episodesContainer = document.getElementById("episodes-container");
-  episodesContainer.innerHTML = "";
+  console.log(searchTerm);
 })
 
 window.onload = setup;
