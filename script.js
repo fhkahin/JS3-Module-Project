@@ -16,10 +16,11 @@ let searchTerm = searchInput.addEventListener("input", (event) => {
 
 function makePageForEpisodes(episodeList, searchTerm) {
   const rootElem = document.getElementById("root");
+  const episodesDisplayAmount = document.querySelector(".episodes-display-amount")
 
   removeAllChildNodes(rootElem)
 
-  let filteredEpisodeList = [...filterEpisodeList(episodeList, searchTerm)];
+  let filteredEpisodeList = filterEpisodeList(episodeList, searchTerm);
 
   function filterEpisodeList(episodeList, searchTerm) {
     if (!searchTerm) {
@@ -35,6 +36,8 @@ function makePageForEpisodes(episodeList, searchTerm) {
     const episodeCard = makeEpisodeCard(episode);
     rootElem.appendChild(episodeCard);
   });
+
+  episodesDisplayAmount.innerHTML = `Showing ${filteredEpisodeList.length} of ${allEpisodes.length}`;
 }
 
 
