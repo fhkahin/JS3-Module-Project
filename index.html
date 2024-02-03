@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Show Project | Fathi Kahin (fkahin)</title>
-    <link href="style.css" rel="stylesheet" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Show Project | Fathi Kahin (fkahin)</title>
+  <link href="style.css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 </head>
+
 <body>
-    <div id="root"></div>
+  <header>
+    <section class="search-bar">
+      <h2>Search by Title or Summary</h2>
+      <input type="text" name="search-input" id="search-input" placeholder="Type your search here">
+      <h3 class="episodes-display-amount"></h3>
+    </section>
+  </header>
 
-    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
+  <main id="root">
+  </main>
 
-    <!-- Loads YOUR javascript code -->
-    <script src="script.js"></script>
-    <footer>
-      <p>Data has (originally) come from TVMaze.com<br>
-      <a href="https://tvmaze.com/">TVMaze.com</a></p>
-    </footer>
+  <footer>
+    <p>Data has (originally) come from TVMaze.com<br>
+      <a href="https://tvmaze.com/">TVMaze.com</a>
+    </p>
+  </footer>
+
+  <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
+  <script src="episodes.js"></script>
+
+  <!-- Loads YOUR javascript code -->
+  <script src="script.js"></script>
 </body>
+
 </html>
