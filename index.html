@@ -11,26 +11,23 @@
 
 <body>
   <header>
-    <section class="search-bar">
-      <h2>Search by Title or Summary</h2>
-      <input type="text" name="search-input" id="search-input" placeholder="Type your search here">
-      <h3 class="episodes-display-amount"></h3>
+    <h1><span id="series-name"></span> Episodes - Source: <a href="https://www.tvmaze.com/" target="_blank">TVMAZE</a>
+    </h1>
+
+    <section class="filter-bar">
+      <h2>Filter Episodes</h2>
+      <select id="episode-number-filter">
+        <option value="">Filter by Episode Number</option>
+      </select>
+      <input type="text" id="search-input" placeholder="Search by Title or Summary">
+      <h3 class="episodes-display-amount"> </h3>
     </section>
   </header>
 
   <main id="root">
   </main>
-
-  
-
   <!-- Loads YOUR javascript code -->
   <script src="script.js"></script>
 </body>
-
-  <footer>
-    <p>Data has (originally) come from TVMaze.com<br>
-      <a href="https://tvmaze.com/">TVMaze.com</a>
-    </p>
-  </footer>
 
 </html>
