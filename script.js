@@ -141,39 +141,40 @@ function filterEpisodesByEpisodeNumber(selectedEpisode, episodeList) {
 
   if (selectedEpisode === 'all') {
     makePageForEpisodes(episodeList);
-    displayEpisodeCount(episodeList.length);
   } else {
     const [season, episodeNumber] = selectedEpisode.split('E');
     const selectedEpisodeCard = episodeList.find(episode => episode.season === parseInt(season.slice(1)) && episode.number === parseInt(episodeNumber));
     if (selectedEpisodeCard) {
       const episodeCard = makeEpisodeCard(selectedEpisodeCard);
       rootElem.appendChild(episodeCard);
-      displayEpisodeCount(1); // Display count of 1 when single episode is selected
     }
   }
+
+  displayEpisodeCount(1, episodeList.length)
 }
 
 // Display the count of episodes
-function displayEpisodeCount(count) {
+function displayEpisodeCount(displayedEpisodes, allEpisodes) {
+  console.log(displayedEpisodes, allEpisodes);
   const episodesDisplayAmount = document.querySelector(".episodes-display-amount");
-  episodesDisplayAmount.textContent = `Displaying ${count} out of ${count} episodes`;
+  episodesDisplayAmount.textContent = `Displaying ${displayedEpisodes} out of ${allEpisodes} episodes`;
 }
 
 // Function to filter episodes by keyword
 function filterEpisodesByKeyword(keyword) {
   const rootElem = document.getElementById("root");
   const episodeCards = rootElem.querySelectorAll('.episode-card');
+  let displayedEpisodes = 0;
+  const allEpisodes = episodeCards.length;
+
   episodeCards.forEach(card => {
     if (card.textContent.toLowerCase().includes(keyword)) {
       card.style.display = 'block';
+      displayedEpisodes++;
     } else {
       card.style.display = 'none';
     }
   });
-}
 
-// Function to update episode list counter
-function updateEpisodeListCounter(filteredEpisodeCount) {
-  const episodesDisplayAmount = document.querySelector('.episodes-display-amount');
-  episodesDisplayAmount.textContent = `Displaying ${filteredEpisodeCount} out of ${filteredEpisodeCount} episodes`;
+  displayEpisodeCount(displayedEpisodes, allEpisodes)
 }
