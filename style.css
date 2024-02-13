@@ -87,7 +87,10 @@ h3.episodes-display-amount {
   color: #fff;
 }
 
-
+#no-show-selected {
+  text-align: center;
+  color: #b90d0d;
+}
 
 /* Media query for smaller devices */
 @media (max-width: 600px) {
