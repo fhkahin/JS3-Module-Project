@@ -15,12 +15,20 @@
     </h1>
 
     <section class="filter-bar">
-      <h2>Filter Episodes</h2>
-      <select id="episode-number-filter">
-        <option value="">Filter by Episode Number</option>
-      </select>
-      <input type="text" id="search-input" placeholder="Search by Title or Summary">
-      <h3 class="episodes-display-amount"> </h3>
+      <section class="filter-bar-element">
+        <h2>Select Show</h2>
+        <select id="select-show-filter">
+          <option value="">Select Show by Name</option>
+        </select>
+      </section>
+      <section class="filter-bar-element">
+        <h2>Filter Episodes</h2>
+        <select id="episode-number-filter">
+          <option value="">Filter by Episode Number</option>
+        </select>
+      </section>
+      <input type="text" id="search-input" placeholder="Search by Title or Summary" class="filter-bar-element">
+      <h3 class="episodes-display-amount filter-bar-element"> </h3>
     </section>
   </header>
 
