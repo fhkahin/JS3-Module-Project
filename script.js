@@ -1,180 +1,194 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const apiUrl = 'https://api.tvmaze.com';
 
-  // Fetch show list and display a message requesting to select a show
-  fetchShows();
-  makePageForEpisodes();
+    // Function to fetch shows listing
+    function fetchShowsListing() {
+        fetch(`${apiUrl}/shows`)
+            .then(response => response.json())
+            .then(data => {
+                const showsListingSection = document.getElementById('shows-listing');
+                const showSelector = document.getElementById('show-selector');
 
-  // Add event listener to search input field
-  const searchInput = document.getElementById('search-input');
-  searchInput.addEventListener('input', function () {
+                showsListingSection.innerHTML = ''; // Clear previous content
+                showSelector.innerHTML = '<option value="placeholder">Select a show...</option>'; // Clear previous options
+
+                // Populate dropdown menu with show titles and append show cards
+                data.forEach(show => {
+                    const showCard = createShowCard(show);
+                    showsListingSection.appendChild(showCard);
+
+                    const option = document.createElement('option');
+                    option.value = show.id;
+                    option.textContent = show.name;
+                    showSelector.appendChild(option);
+                });
+
+                showsListingSection.style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching shows:', error));
+    }
+
+    // Function to create show card
+    function createShowCard(show) {
+        const showCard = document.createElement('div');
+        showCard.classList.add('show-card');
+        showCard.dataset.showId = show.id;
+        showCard.innerHTML = `
+            <h3>${show.name}</h3>
+            <img src="${show.image.medium}" alt="${show.name}" />
+            <p>${show.summary}</p>
+            <p><strong>Genres:</strong> ${show.genres.join(', ')}</p>
+            <p><strong>Status:</strong> ${show.status}</p>
+            <p><strong>Rating:</strong> ${show.rating.average}</p>
+            <p><strong>Runtime:</strong> ${show.runtime} minutes</p>
+        `;
+        showCard.addEventListener('click', () => {
+            fetchEpisodes(show.id);
+            document.getElementById('shows-listing').style.display = 'none';
+        });
+        return showCard;
+    }
+
+    // Function to fetch episodes for a show
+    function fetchEpisodes(showId) {
+        fetch(`${apiUrl}/shows/${showId}/episodes`)
+            .then(response => response.json())
+            .then(episodes => {
+                const episodesListingSection = document.getElementById('episodes-listing');
+                episodesListingSection.style.display = 'block';
+
+                makePageForEpisodes(episodes);
+                populateEpisodeDropdown(episodes);
+            })
+            .catch(error => console.error('Error fetching episodes:', error));
+    }
+
+    // Function to make page for episodes
+    function makePageForEpisodes(episodeList) {
+        const rootElem = document.getElementById("episode-list");
+        rootElem.innerHTML = ""; // Clear previous episodes
+
+        // Create and append episode cards
+        episodeList.forEach(episode => {
+            const episodeCard = createEpisodeCard(episode);
+            rootElem.appendChild(episodeCard);
+        });
+    }
+
+    // Function to create episode card
+    function createEpisodeCard(episode) {
+        const episodeCard = document.createElement('div');
+        episodeCard.classList.add('episode-card');
+        episodeCard.dataset.episodeId = episode.id;
+        episodeCard.innerHTML = `
+            <h4>${episode.name}</h4>
+            <p>Season ${episode.season} | Episode ${episode.number}</p>
+            <p>${episode.summary}</p>
+            <img src="${episode.image.medium}" alt="${episode.name}" />
+        `;
+        return episodeCard;
+    }
+
+    // Function to populate dropdown menu for episodes
+    function populateEpisodeDropdown(episodes) {
+        const episodeSelector = document.getElementById('episode-selector');
+
+        // Clear previous options
+        episodeSelector.innerHTML = '<option value="placeholder">Select an episode...</option>';
+
+        // Populate dropdown with episode titles
+        episodes.forEach(episode => {
+            const option = document.createElement('option');
+            option.value = episode.id;
+            option.textContent = `${episode.name} - S${episode.season}E${episode.number}`;
+            episodeSelector.appendChild(option);
+        });
+    }
+
+    // Function to display only the selected episodes card
+    function showSelectedEpisodeCard(selectedEpisodeId) {
+        const episodeCards = document.querySelectorAll('.episode-card');
+
+        episodeCards.forEach(card => {
+            if (card.dataset.episodeId === selectedEpisodeId) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Event listener for search bar
+    // Event listener for search bar
+// Function to perform search
+function performSearch(searchTerm) {
+    // Clear previous content
+    const showsListingSection = document.getElementById('shows-listing');
+    showsListingSection.innerHTML = '';
+
+    // Fetch shows matching the search term
+    fetch(`${apiUrl}/search/shows?q=${searchTerm}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(showData => {
+                const show = showData.show;
+                const showCard = createShowCard(show);
+                showsListingSection.appendChild(showCard);
+            });
+        })
+        .catch(error => console.error('Error fetching search results:', error));
+}
+
+// Event listener for search bar
+document.getElementById('search-bar').addEventListener('input', function () {
     const searchTerm = this.value.trim().toLowerCase();
-    filterEpisodesByKeyword(searchTerm);
-  });
+    if (searchTerm.length > 0) {
+        performSearch(searchTerm);
+    } else {
+        // If the search bar is empty, fetch all shows
+        fetchShowsListing();
+    }
 });
 
-// Fetch shows list
 
-function fetchShows() {
-  const showListApi = `https://api.tvmaze.com/shows`;
 
-  fetch(showListApi)
-    .then(response => response.json())
-    .then(shows => {
-      populateSelectShowFilter(shows); // Populate show list dropdown
-    })
-    .catch(error => console.error('Error fetching shows:', error));
-}
-
-// Fetch episodes for the selected TV show
-function fetchEpisodes(showId) {
-  const showEpisodesApi = `https://api.tvmaze.com/shows/${showId}/episodes`;
-
-  fetch(showEpisodesApi)
-    .then(response => response.json())
-    .then(episodes => {
-      makePageForEpisodes(episodes);
-      populateEpisodeNumberFilter(episodes); // Populate episode number filter dropdown
-    })
-    .catch(error => console.error('Error fetching episodes:', error));
-}
-
-// Make page for episodes
-function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
-  rootElem.innerHTML = ""; // Clear previous episodes
-
-  if (episodeList) {
-    // Create and append episode cards
-    episodeList.forEach(episode => {
-      const episodeCard = makeEpisodeCard(episode);
-      rootElem.appendChild(episodeCard);
+    // Event listener for back to shows button
+    document.getElementById('back-to-shows-btn').addEventListener('click', () => {
+        document.getElementById('episodes-listing').style.display = 'none';
+        fetchShowsListing();
     });
-  } else {
-    rootElem.innerHTML = `<h2 id='no-show-selected'>Please, select a show in the dropdown menu above</h2>`;
-  }
-}
 
-// Function to create episode cards
-function makeEpisodeCard(episode) {
-  // Create episode card elements and populate them with episode information
-  const episodeCard = document.createElement('div');
-  episodeCard.classList.add('episode-card');
+    // Event listener for show selector
+    document.getElementById('show-selector').addEventListener('change', function () {
+        const selectedShowId = this.value;
+        if (selectedShowId !== 'placeholder') {
+            fetchEpisodes(selectedShowId);
+            showSelectedShowCard(selectedShowId);
+        }
+    });
 
-  const title = document.createElement('h2');
-  title.classList.add('episode-card__title');
-  title.textContent = `${episode.name} - S${episode.season.toString().padStart(2, '0')}E${episode.number.toString().padStart(2, '0')}`;
+    // Event listener for episode selector
+    document.getElementById('episode-selector').addEventListener('change', function () {
+        const selectedEpisodeId = this.value;
+        if (selectedEpisodeId !== 'placeholder') {
+            showSelectedEpisodeCard(selectedEpisodeId);
+        }
+    });
 
-  const dataContainer = document.createElement('div');
-  dataContainer.classList.add('episode-card__data');
+    // Function to display only the selected show's card
+    function showSelectedShowCard(selectedShowId) {
+        const showsListingSection = document.getElementById('shows-listing');
+        const showCards = showsListingSection.querySelectorAll('.show-card');
 
-  const image = document.createElement('img');
-  image.classList.add('episode-card__img');
-  image.src = episode.image ? episode.image.medium : './No-Image-Placeholder.png';
-
-  const summary = document.createElement('p');
-  summary.classList.add('episode-card__summary');
-  summary.innerHTML = episode.summary;
-
-  // Append elements to episode card
-  dataContainer.appendChild(image);
-  dataContainer.appendChild(summary);
-  episodeCard.appendChild(title);
-  episodeCard.appendChild(dataContainer);
-
-  return episodeCard;
-}
-
-// Function to select a show in the dropdown menu
-function populateSelectShowFilter(showList) {
-  const selectShowFilterElement = document.getElementById('select-show-filter');
-
-  // Order the array
-  const orderedList = showList.sort((a, b) => a.name.localeCompare(b.name));
-
-  // Populate dropdown with shows names
-  orderedList.forEach(show => {
-    const optionElement = document.createElement('option');
-    optionElement.value = show.id;
-    optionElement.textContent = show.name;
-    selectShowFilterElement.appendChild(optionElement);
-  });
-
-  // Add event listener to display a show when an option is selected
-  selectShowFilterElement.addEventListener('change', function () {
-    const selectedShow = this.value;
-    selectedShow ? fetchEpisodes(selectedShow) : makePageForEpisodes()
-  });
-}
-
-// Function to populate dropdown menu for episode number filter
-function populateEpisodeNumberFilter(episodeList) {
-  const episodeNumberFilterElement = document.getElementById('episode-number-filter');
-
-  // Clear previous options
-  episodeNumberFilterElement.innerHTML = "";
-
-  // Create default option to show all episodes
-  const defaultOption = document.createElement('option');
-  defaultOption.value = 'all';
-  defaultOption.textContent = 'Show All Episodes';
-  episodeNumberFilterElement.appendChild(defaultOption);
-
-  // Populate dropdown with episode numbers
-  episodeList.forEach(episode => {
-    const optionElement = document.createElement('option');
-    optionElement.value = `S${episode.season.toString().padStart(2, '0')}E${episode.number.toString().padStart(2, '0')}`;
-    optionElement.textContent = `${optionElement.value} - ${episode.name}`;
-    episodeNumberFilterElement.appendChild(optionElement);
-  });
-
-  // Add event listener to filter episodes when an option is selected
-  episodeNumberFilterElement.addEventListener('change', function () {
-    const selectedEpisode = this.value;
-    filterEpisodesByEpisodeNumber(selectedEpisode, episodeList);
-  });
-}
-
-// Function to filter episodes by selected episode number
-function filterEpisodesByEpisodeNumber(selectedEpisode, episodeList) {
-  const rootElem = document.getElementById("root");
-  rootElem.innerHTML = ""; // Clear previous episodes
-
-  if (selectedEpisode === 'all') {
-    makePageForEpisodes(episodeList);
-  } else {
-    const [season, episodeNumber] = selectedEpisode.split('E');
-    const selectedEpisodeCard = episodeList.find(episode => episode.season === parseInt(season.slice(1)) && episode.number === parseInt(episodeNumber));
-    if (selectedEpisodeCard) {
-      const episodeCard = makeEpisodeCard(selectedEpisodeCard);
-      rootElem.appendChild(episodeCard);
+        showCards.forEach(card => {
+            if (card.dataset.showId === selectedShowId) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
     }
-  }
 
-  displayEpisodeCount(1, episodeList.length)
-}
-
-// Display the count of episodes
-function displayEpisodeCount(displayedEpisodes, allEpisodes) {
-  console.log(displayedEpisodes, allEpisodes);
-  const episodesDisplayAmount = document.querySelector(".episodes-display-amount");
-  episodesDisplayAmount.textContent = `Displaying ${displayedEpisodes} out of ${allEpisodes} episodes`;
-}
-
-// Function to filter episodes by keyword
-function filterEpisodesByKeyword(keyword) {
-  const rootElem = document.getElementById("root");
-  const episodeCards = rootElem.querySelectorAll('.episode-card');
-  let displayedEpisodes = 0;
-  const allEpisodes = episodeCards.length;
-
-  episodeCards.forEach(card => {
-    if (card.textContent.toLowerCase().includes(keyword)) {
-      card.style.display = 'block';
-      displayedEpisodes++;
-    } else {
-      card.style.display = 'none';
-    }
-  });
-
-  displayEpisodeCount(displayedEpisodes, allEpisodes)
-}
+    // Initial fetch for shows listing
+    fetchShowsListing();
+});
